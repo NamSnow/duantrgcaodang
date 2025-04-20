@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Kiểm tra và xử lý hình ảnh
     $imagePath = null;
     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        $uploadDir = '../assets/image';
+        $uploadDir = '../assets/image/';
         $imageFileName = uniqid() . '-' . basename($_FILES['image']['name']);  // Tạo tên file duy nhất
         $imagePath = $uploadDir . $imageFileName;
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div>
                     <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
-                    <input type="file" name="image" id="image" class="mt-1 p-2 w-full border border-gray-300 rounded">
+                    <input type="image" name="image" id="image" class="mt-1 p-2 w-full border border-gray-300 rounded">
                 </div>
 
                 <div>

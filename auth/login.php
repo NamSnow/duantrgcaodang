@@ -7,7 +7,7 @@ if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] === 'admin') {
         header("Location: /cutonama3/admin");
     } else {
-        header("Location: /cutonama3");
+        header("Location: /cutonama3/user");
     }
     exit();
 }
@@ -38,7 +38,7 @@ if (isset($_POST['login_submit'])) {
             if ($user['role'] === 'admin') {
                 header("Location: /cutonama3/admin"); // Đường dẫn trang admin
             } else {
-                header("Location: /cutonama3"); // Đường dẫn trang chính cho user thường
+                header("Location: /cutonama3/user"); // Đường dẫn trang chính cho user thường
             }
             exit();
         } else {

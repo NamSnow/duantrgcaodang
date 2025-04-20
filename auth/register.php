@@ -44,7 +44,7 @@ if (isset($_POST['register_submit'])) {
             if ($stmt_insert->execute()) {
                 $_SESSION['user_id'] = $pdo->lastInsertId(); // Lưu user_id
                 $_SESSION['username'] = $username;
-                header("Location: /cutonama3/");
+                header("Location: /cutonama3/user");
                 exit();
             } else {
                 $error = "Lỗi khi đăng ký tài khoản.";
