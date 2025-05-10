@@ -13,13 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Xử lý tải lên ảnh
     $imagePath = null;
     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        $uploadDir = '../assets/news/'; // Thư mục tải lên riêng
+        $uploadDir = '../assets/football/'; // Thư mục tải lên riêng
         $imageFileName = uniqid() . '-' . basename($_FILES['image']['name']);
         $imagePath = $uploadDir . $imageFileName;
 
         if (!move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
             $_SESSION['error_message'] = "Failed to upload image.";
-            header("Location: create.php"); // Quay lại trang form
+            header("Location: create_football.php");
             exit();
         }
     }
@@ -27,23 +27,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
     $summary = $_POST['summary'];
     $content = $_POST['content'];
+     $match_date = $_POST['match_date'];
+      $teams = $_POST['teams'];
 
-    if (empty($title) || empty($summary) || empty($content)) {
+    if (empty($title) || empty($summary) || empty($content) || empty($match_date) || empty($teams)) {
         $_SESSION['error_message'] = "All fields are required.";
-        header("Location: create.php"); // Quay lại trang form
+         header("Location: create_football.php");
         exit();
     }
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO news (title, summary, content, image) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$title, $summary, $content, $imagePath]);
+        $stmt = $pdo->prepare("INSERT INTO football_news (title, summary, content, image, match_date, teams) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $summary, $content, $imagePath, $match_date, $teams]);
 
-        $_SESSION['success_message'] = "News added successfully!";
-        header("Location: /cutonama3/admin/index.php"); // Chuyển về trang admin
+        $_SESSION['success_message'] = "Football news added successfully!";
+        header("Location: /cutonama3/admin/index.php");
         exit();
     } catch (PDOException $e) {
         $_SESSION['error_message'] = "Error: " . $e->getMessage();
-        header("Location: create.php"); // Quay lại trang form
+        header("Location: create_football.php");
         exit();
     }
 }
@@ -54,13 +56,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Add General News</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Admin - Add Football News</title>
+     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $( function() {
+            $( "#match_date" ).datepicker({
+                dateFormat: 'yy-mm-dd',
+                changeMonth: true,
+                changeYear: true
+            });
+        } );
+    </script>
 </head>
 <body class="bg-gray-100">
     <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-        <h1 class="text-2xl font-semibold text-gray-800 mb-6">Add General News</h1>
+        <h1 class="text-2xl font-semibold text-gray-800 mb-6">Add Football News</h1>
 
         <?php if (isset($_SESSION['error_message'])): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -73,11 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
 
-        <form method="POST" action="create.php" enctype="multipart/form-data" class="space-y-4">
+        <form method="POST" action="create_football.php" enctype="multipart/form-data" class="space-y-4">
             <div>
                 <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Title:</label>
-                <input type="text" name="title" id="title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-             Loungefly Harry Potter Hedwig Owl Mini Backpack
+                <input type="text" name="title" id="title" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
             <div>
                 <label for="summary" class="block text-gray-700 text-sm font-bold mb-2">Summary:</label>
@@ -94,8 +107,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Image:</label>
                 <input type="file" name="image" id="image" class="input-file">
             </div>
+             <div>
+                <label for="match_date" class="block text-gray-700 text-sm font-bold mb-2">Match Date:</label>
+                <input type="text" name="match_date" id="match_date"  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+            <div>
+              <label for="teams" class="block text-gray-700 text-sm font-bold mb-2">Teams:</label>
+              <input type="text" name="teams" id="teams"  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+
             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Add News</button>
-            <a href="/cutonama3/admin/index.php" class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Cancel</a>
+             <a href="/cutonama3/admin/index.php" class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Cancel</a>
         </form>
     </div>
 </body>
